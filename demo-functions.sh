@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 INTERACTIVE=${INTERACTIVE:-"1"}
-NOEXEC=${NOEXEC:-"0"}
+NOEXEC=0
 
 prompt() {
     echo ""
@@ -11,11 +11,13 @@ prompt() {
 typeline() {
     case $1 in
        -x) 
-           CMD=$2
            NOEXEC=1
+           shift
+           CMD=$*
            ;;
        *) 
-           CMD=$1 
+	   NOEXEC=0
+           CMD=$* 
            ;;
     esac
 
@@ -27,8 +29,6 @@ typeline() {
     done
     echo ""
     sleep 0.25
-    if [ "$NOEXEC" = "0" ] ; then
-        $CMD
-        [[ "$INTERACTIVE" == "1" ]] && read -p "hit <ENTER> to continue..."
-    fi
+    [[ "$NOEXEC" == "0" ]] && $CMD
+    [[ "$INTERACTIVE" == "1" ]] && read -p "hit <ENTER> to continue..."
 }
