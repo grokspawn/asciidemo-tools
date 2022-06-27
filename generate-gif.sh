@@ -18,7 +18,7 @@ EOF
 
 if [ $# -lt 2 ] 
 then
-    echo "ERROR: missing mandatory parameters: {INPUT_FILE} and {OUTPUT_FILE}"
+    echo "ERROR: missing mandatory parameters: {INPUT_SCRIPT_FILE} and {OUTPUT_GIF_FILE}"
     usage
     exit -1
 fi
@@ -45,5 +45,5 @@ GIF_FILE=$(basename $OUTFILE)
 
 TOGIF="docker run --rm -v $OUTER_PATH:/data asciinema/asciicast2gif"
 
-INTERACTIVE=0 asciinema rec --overwrite -c $INFILE $TMPFILE
-$TOGIF $JSON_FILE $GIF_FILE && rm $TMPFILE && mv $OUTER_PATH/$GIF_FILE $OUTFILE
+INTERACTIVE=0 asciinema rec -i 2.5 --overwrite -c $INFILE $TMPFILE
+$TOGIF -h 50 $JSON_FILE $GIF_FILE && rm $TMPFILE && mv $OUTER_PATH/$GIF_FILE $OUTFILE
