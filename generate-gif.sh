@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" > /dev/null 2>&1 ; pwd -P )"
-TMPDIR="${TMPDIR:-/tmp/}"
-volume_name="image-tmp"
 
 set -o errexit
 set -o pipefail
@@ -17,14 +15,6 @@ function usage() {
     both are mandatory parameters
 EOF
 }
-
-function cleanup() {
-   exit_status=$?
-   docker volume rm ${volume_name}
-   docker rm loader
-   exit $exit_Status
-}
-trap cleanup EXIT
 
 if [ $# -lt 2 ] 
 then
@@ -43,7 +33,6 @@ then
     echo "ERROR:  failure to create tempfile"
     exit 1
 fi
-chmod a+r $TMPFILE
 
 echo "tempfile: $TMPFILE"
 echo "generating GIF $OUTFILE from script $INFILE"
@@ -54,18 +43,6 @@ OUTER_PATH=$(dirname $TMPFILE)
 JSON_FILE=$(basename $TMPFILE)
 GIF_FILE=$(basename $OUTFILE)
 
-TOGIF="docker run --rm --name asciicast2gif -v ${volume_name}:/data asciinema/asciicast2gif"
-
 INTERACTIVE=0 asciinema rec -i 2.5 --overwrite -c $INFILE $TMPFILE
-
-docker volume create ${volume_name}
-docker container create --name loader -v ${volume_name}:/data hello-world
-docker cp $TMPFILE loader:/data/$JSON_FILE
-docker rm loader
-
-$TOGIF -h 50 /data/$JSON_FILE /data/$GIF_FILE
-
-docker container create --name loader -v ${volume_name}:/data hello-world
-docker cp loader:/data/$GIF_FILE $OUTFILE
-docker rm loader
-rm $TMPFILE
+docker run --rm -v "$OUTER_PATH":/data:Z asciinema/asciicast2gif \
+    -h 50 $JSON_FILE $GIF_FILE && rm $TMPFILE && mv $OUTER_PATH/$GIF_FILE $OUTFILE

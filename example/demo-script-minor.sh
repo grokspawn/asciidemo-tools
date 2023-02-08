@@ -9,8 +9,8 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" > /dev/null 2>&1 ; pwd -P )"
 
 INFILE=$HOME/devel/example-operator-index/semver-veneer.yaml
 
-sed -i -e 's/^generatemajorchannels: .$/generatemajorchannels: false/' $INFILE
-sed -i -e 's/^generateminorchannels: .$/generateminorchannels: true/' $INFILE
+sed -i -e 's/^generatemajorchannels:.*$/generatemajorchannels: false/' $INFILE
+sed -i -e 's/^generateminorchannels:.*$/generateminorchannels: true/' $INFILE
 
 function run() {
 	# pretty-print the input schema
