@@ -19,13 +19,13 @@ function run() {
 	typeline "clear"
 	#clear
 	typeline -x "# <--> Generate the rendered FBC with auto-generated channels"
-	typeline "./bin/opm alpha render-veneer semver $INFILE -o yaml"
-	#typeline './bin/opm alpha render-veneer semver' $INFILE '-o yaml | yq "select(.schema == \"olm.channel\")"'
+	typeline "./bin/opm alpha render-template semver $INFILE -o yaml"
+	#typeline './bin/opm alpha render-template semver' $INFILE '-o yaml | yq "select(.schema == \"olm.channel\")"'
 	sleep 5
         typeline "clear"
 	#clear
 	typeline -x "# <--> Generate the mermaid graph data for auto-generated channels"
-	typeline "./bin/opm alpha render-veneer semver $INFILE -o mermaid"
+	typeline "./bin/opm alpha render-template semver $INFILE -o mermaid"
 	sleep 10
 	typeline -x "# <--> Done!"
 }
