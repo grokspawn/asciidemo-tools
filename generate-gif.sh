@@ -16,6 +16,18 @@ function usage() {
 EOF
 }
 
+function check_prereq() {
+   prog=$1
+   echo -n "Checking prerequisite ($prog) ... "
+   if command -v $prog &> /dev/null
+   then
+      echo "ok"
+   else
+	echo "ERROR"
+	exit 1
+   fi
+}
+
 if [ $# -lt 2 ] 
 then
     echo "ERROR: missing mandatory parameters: {INPUT_SCRIPT_FILE} and {OUTPUT_GIF_FILE}"
@@ -27,7 +39,17 @@ INFILE=$1
 OUTFILE=$2
 shift 2
 
-TMPFILE=$(mktemp $TMPDIR/asciinema.json.XXXXX)
+PREREQUISITES="asciinema agg"
+for req in $PREREQUISITES
+do
+   check_prereq $req
+done
+
+: "${TMPDIR:=/tmp/}"
+# normalize tmpdir path, because sometimes it has a trailing '/' char and this
+# can result in a doubling of that char, which some parsers don't like
+NORMALIZED_TMPDIR=$(realpath $TMPDIR)
+TMPFILE=$(mktemp $NORMALIZED_TMPDIR/asciinema.json.XXXXX)
 if [ ! -e $TMPFILE ] 
 then
     echo "ERROR:  failure to create tempfile"
@@ -37,12 +59,5 @@ fi
 echo "tempfile: $TMPFILE"
 echo "generating GIF $OUTFILE from script $INFILE"
 
-# separate TMPFILE into its path/file components, since we'll need the path for volume mapping 
-# and the file for the relative pathing inside that container
-OUTER_PATH=$(dirname $TMPFILE)
-JSON_FILE=$(basename $TMPFILE)
-GIF_FILE=$(basename $OUTFILE)
-
 INTERACTIVE=0 asciinema rec -i 2.5 --overwrite -c $INFILE $TMPFILE
-docker run --rm -v "$OUTER_PATH":/data:Z asciinema/asciicast2gif \
-    -h 50 $JSON_FILE $GIF_FILE && rm $TMPFILE && mv $OUTER_PATH/$GIF_FILE $OUTFILE
+agg $TMPFILE $OUTFILE && rm $TMPFILE 
