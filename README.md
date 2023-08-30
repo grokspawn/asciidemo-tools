@@ -3,12 +3,13 @@ a framework to simplify generation of asciinema-based demos
 
 ## Background
 Our team had some tribal knowledge around the use of [asciinema](https://asciinema.org/) and [asciicast2gif](https://github.com/asciinema/asciicast2gif) to generate demo clips used to supplement repository README.md.  
-This represents an effort to commoditize that pipeline to make it easier to use/share.
+This represents an effort to commoditize that pipeline to make it easier to use/share.  
+asciicast2gif was retired and replaced with [agg](https://github.com/asciinema/agg), which seems to be generally available and installable without much in the way of dependencies.
 
 ## Current Design Assumptions
 
-- asciinema is locally installed or otherwise can be invoked using the `asciinema` command and standard option passing. 
-- asciicast2gif is not locally installed and user desires to run via a docker run action.
+- asciinema is locally installed or otherwise can be invoked using the `asciinema` command and standard option passing (note that running this as a container has implications on what commands can be executed, for e.g. starting kind clusters).
+- agg is locally installed or otherwise can be invoked using the `agg` command and standard option passing
 
 ## Usage
 The functional entrypoint is [generate-gif.sh](https://github.com/grokspawn/asciidemo-tools/blob/main/generate-gif.sh).  This script takes two (mandatory) positional parameters corresponding to the input script name and the output GIF filename. 

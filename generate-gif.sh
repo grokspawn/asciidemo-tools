@@ -60,4 +60,4 @@ echo "tempfile: $TMPFILE"
 echo "generating GIF $OUTFILE from script $INFILE"
 
 INTERACTIVE=0 asciinema rec -i 2.5 --overwrite -c $INFILE $TMPFILE
-agg $TMPFILE $OUTFILE && rm $TMPFILE 
+agg --last-frame-duration 10 $TMPFILE $OUTFILE && rm $TMPFILE
